@@ -73,21 +73,4 @@ class WaveformVisualizer(QWidget):
             color = QColor(base_color)
             color.setAlpha(alpha)
 
-            gradient = QLinearGradient(x, y, x, h)
-            gradient.setColorAt(0.0, QColor(base_color))
-            gradient.setColorAt(0.5, QColor(
-                min(255, base_color.red() + 30),
-                min(255, base_color.green() + 30),
-                min(255, base_color.blue() + 30),
-                alpha))
-            gradient.setColorAt(1.0, QColor(base_color.red() // 2,
-                                             base_color.green() // 2,
-                                             base_color.blue() // 2, alpha // 2))
-
-            painter.setBrush(gradient)
-            painter.setPen(Qt.PenStyle.NoPen)
-            painter.drawRoundedRect(
-                QRect(int(x), int(y), int(bar_width), int(bar_h)),
-                int(bar_width / 2), int(bar_width / 2))
-
         painter.end()
