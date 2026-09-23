@@ -51,9 +51,44 @@ THEMES = {
         "item_hover": "#161A24",
         "border": "#0F1419",
         "slider_handle": "#BFBDB6",
-    }
+    },
+    "tokyo_night": {
+        "name": "Tokyo Night",
+        "bg_primary": "#1A1B26",
+        "bg_secondary": "#16161E",
+        "bg_titlebar": "#16161E",
+        "text": "#C0CAF5",
+        "text_muted": "#565F89",
+        "accent": "#7AA2F7",
+        "accent_hover": "#BB9AF7",
+        "surface": "#1F2335",
+        "surface_hover": "#292E42",
+        "close_hover": "#F7768E",
+        "selection_bg": "#1F2335",
+        "item_hover": "#202430",
+        "border": "#1A1B26",
+        "slider_handle": "#A9B1D6",
+    },
+    "nord": {
+        "name": "Nord",
+        "bg_primary": "#2E3440",
+        "bg_secondary": "#2B2F3A",
+        "bg_titlebar": "#272C36",
+        "text": "#D8DEE9",
+        "text_muted": "#81A1C1",
+        "accent": "#88C0D0",
+        "accent_hover": "#8FBCBB",
+        "surface": "#3B4252",
+        "surface_hover": "#434C5E",
+        "close_hover": "#BF616A",
+        "selection_bg": "#3B4252",
+        "item_hover": "#363C4A",
+        "border": "#2E3440",
+        "slider_handle": "#ECEFF4",
+    },
+}
 
-    
+
 def get_theme(name: str) -> dict:
     return THEMES.get(name, THEMES["dracula"])
 
@@ -119,3 +154,171 @@ def build_stylesheet(theme: dict) -> str:
         border-radius: 8px;
         font-size: 14px;
     }}
+    QMenu::item:hover {{
+        background-color: {t['surface']};
+        color: {t['accent']};
+    }}
+    QMenu::item:selected {{
+        color: {t['accent']};
+    }}
+    QMenu::item:disabled {{
+        color: {t['text_muted']};
+    }}
+    QMenu::item:checked {{
+        color: {t['accent']};
+        font-weight: 600;
+    }}
+    QMenu::separator {{
+        height: 1px;
+        background: {t['surface']};
+        margin: 8px 12px;
+    }}
+    QMenu::indicator {{
+        width: 16px;
+        height: 16px;
+        margin-left: 6px;
+    }}
+    QMenu::indicator:checked {{
+        color: {t['accent']};
+    }}
+
+    #TitleLabel {{
+        font-family: "Comfortaa", "SF Pro Display", "Cantarell", "Segoe UI", sans-serif;
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: {t['text']};
+        background-color: transparent;
+        border: none;
+        padding: 0px;
+    }}
+
+    #TitleLogo {{
+        background-color: transparent;
+        border-radius: 6px;
+    }}
+    #TitleLogo:hover {{
+        background-color: {t['surface']};
+    }}
+
+QToolTip {{
+        background-color: {t['surface_hover']};
+        color: {t['text']};
+        border: 1px solid {t['surface']};
+        border-radius: 6px;
+        padding: 4px 8px;
+        font-size: 12px;
+    }}
+
+#WinControlBtn {{
+        background-color: transparent;
+        color: {t['text_muted']};
+        border-radius: 14px;
+        min-width: 28px;
+        max-width: 28px;
+        min-height: 28px;
+        max-height: 28px;
+        font-size: 15px;
+        font-weight: 600;
+        padding: 0px;
+    }}
+    #WinControlBtn:hover {{
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+            stop:0 {t['surface_hover']}, stop:1 {t['surface']});
+        color: {t['text']};
+    }}
+    #WinControlBtn:pressed {{
+        background-color: {t['accent']};
+        color: {t['bg_titlebar']};
+    }}
+    #CloseBtn {{
+        background-color: transparent;
+        color: {t['text_muted']};
+        border-radius: 14px;
+        min-width: 28px;
+        max-width: 28px;
+        min-height: 28px;
+        max-height: 28px;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 0px;
+    }}
+    #CloseBtn:hover {{
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+            stop:0 {t['close_hover']}, stop:1 {t['surface']});
+        color: #FFFFFF;
+    }}
+    #CloseBtn:pressed {{
+        background-color: {t['accent']};
+        color: {t['bg_titlebar']};
+    }}
+
+    #MenuBtn {{
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+            stop:0 {t['surface_hover']}, stop:1 {t['surface']});
+        color: {t['accent']};
+        border: none;
+        border-radius: 18px;
+        min-width: 36px;
+        max-width: 36px;
+        min-height: 36px;
+        max-height: 36px;
+        font-size: 18px;
+        font-weight: 600;
+        padding: 0px;
+    }}
+    #MenuBtn:hover {{
+        background-color: {t['surface_hover']};
+        color: {t['accent']};
+    }}
+    #MenuBtn:pressed {{
+        background-color: {t['surface']};
+        color: {t['accent']};
+    }}
+
+    QPushButton {{
+        background-color: {t['surface']};
+        color: {t['text']};
+        border-radius: 10px;
+        padding: 8px 16px;
+        font-weight: 500;
+    }}
+    QPushButton:hover {{
+        background-color: {t['surface_hover']};
+        border: 1px solid {t['accent']};
+    }}
+    QPushButton:pressed {{
+        background-color: {t['accent']};
+        color: {t['bg_titlebar']};
+    }}
+    QPushButton:checked {{
+        background-color: {t['accent']};
+        color: {t['bg_titlebar']};
+    }}
+
+    #TransportBtn, #ShuffleBtn, #LoopBtn {{
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+            stop:0 {t['surface_hover']}, stop:1 {t['surface']});
+        color: {t['text']};
+        border-radius: 22px;
+        border: 1px solid transparent;
+        font-size: 20px;
+    }}
+    #TransportBtn:hover, #ShuffleBtn:hover, #LoopBtn:hover {{
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+            stop:0 {t['surface']}, stop:1 {t['surface_hover']});
+        color: {t['accent']};
+        border: 1px solid {t['accent']};
+    }}
+    #TransportBtn:pressed {{
+        background-color: {t['accent']};
+        color: {t['bg_titlebar']};
+        border: 1px solid {t['accent']};
+    }}
+    #ShuffleBtn:checked, #LoopBtn:checked {{
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+            stop:0 {t['accent']}, stop:1 {t['accent_hover']});
+        color: {t['bg_titlebar']};
+        border: 1px solid {t['accent_hover']};
+    }}
+ 
