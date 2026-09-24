@@ -1,13 +1,16 @@
 """Custom frameless title bar."""
-
-
 from pathlib import Path
 
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
 from PyQt6.QtCore import Qt, QPoint, QSize, pyqtSignal
 from PyQt6.QtGui import QMouseEvent, QPixmap
 
+from melodious.ui import icons
 
+WIN_ICON = 16
+MENU_ICON = 18
+_LOGO_SIZE = 28
+_ASSETS = Path(__file__).resolve().parent.parent / "assets" / "icons"
 
 
 class TitleBar(QWidget):
@@ -46,87 +49,106 @@ class TitleBar(QWidget):
         self.max_btn = self._make_btn("Maximize")
         self.close_btn = self._make_btn("Close")
 
+        self.min_btn.clicked.connect(self._minimize)
+        self.max_btn.clicked.connect(self._maximize)
+        self.close_btn.clicked.connect(self._close)
 
-        self.seek_slider = _SeekSlider(Qt.Orientation.Horizontal)
-        self.seek_slider.setRange(0, 1000)
-        self.seek_slider.sliderPressed.connect(self._on_seek_press)
-        self.seek_slider.sliderReleased.connect(self._on_seek_release)
-        self.seek_slider.sliderMoved.connect(self._on_seek_move)
+        self.close_btn.setObjectName("CloseBtn")
 
-        self.duration_label = QLabel("00:00")
-        self.duration_label.setObjectName("InfoLabel")
+        layout.addWidget(self.menu_btn)
+        layout.addSpacing(8)
+        layout.addWidget(self.logo_label)
+        layout.addSpacing(6)
+        layout.addWidget(self.title)
+        layout.addStretch()
+        layout.addWidget(self.min_btn)
+        layout.addSpacing(4)
+        layout.addWidget(self.max_btn)
+        layout.addSpacing(4)
+        layout.addWidget(self.close_btn)
 
-        seek_row.addWidget(self.time_label)
-        seek_row.addWidget(self.seek_slider, 1)
-        seek_row.addWidget(self.duration_label)
-        main_layout.addLayout(seek_row)
+        self._build_icons()
 
-        controls_row = QHBoxLayout()
-        controls_row.setSpacing(8)
+    def _make_btn(self, tooltip: str) -> QPushButton:
+        btn = QPushButton()
+        btn.setObjectName("WinControlBtn")
+        btn.setFixedSize(28, 28)
+        btn.setIconSize(QSize(WIN_ICON, WIN_ICON))
+        btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn.setToolTip(tooltip)
+        return btn
 
-        self.shuffle_btn = QPushButton()
-        self.shuffle_btn.setObjectName("ShuffleBtn")
-        self.shuffle_btn.setCheckable(True)
-        self.shuffle_btn.setToolTip("Shuffle (random order)")
-        self.shuffle_btn.setFixedSize(44, 44)
-        self.shuffle_btn.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
-        self.shuffle_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.shuffle_btn.toggled.connect(self.shuffle_toggled.emit)
+    def _build_icons(self) -> None:
+        self.menu_btn.setIcon(icons.icon_menu(MENU_ICON, self._fg))
+        self.min_btn.setIcon(icons.icon_minimize(WIN_ICON, self._fg))
+        self._apply_maximize_icon()
+        self.close_btn.setIcon(icons.icon_close(WIN_ICON, self._fg))
 
-        self.prev_btn = QPushButton()
-        self.prev_btn.setObjectName("TransportBtn")
-        self.prev_btn.setFixedSize(46, 46)
-        self.prev_btn.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
-        self.prev_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.prev_btn.clicked.connect(self.prev_clicked.emit)
+    def _set_logo_icon(self) -> None:
+        for name in ("melodious-32.png", "melodious-48.png", "melodious-64.png"):
+            path = _ASSETS / name
+            if path.exists():
+                pm = QPixmap(str(path))
+                if not pm.isNull():
+                    self.logo_label.setPixmap(
+                        pm.scaled(_LOGO_SIZE, _LOGO_SIZE,
+                                  Qt.AspectRatioMode.KeepAspectRatio,
+                                  Qt.TransformationMode.SmoothTransformation))
+                    return
 
-        self.play_btn = QPushButton()
-        self.play_btn.setObjectName("PlayPauseBtn")
-        self.play_btn.setFixedSize(54, 54)
-        self.play_btn.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
-        self.play_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.play_btn.clicked.connect(self.play_pause_clicked.emit)
+    def _apply_maximize_icon(self) -> None:
+        if self.window() is not None and self.window().isMaximized():
+            self.max_btn.setIcon(icons.icon_restore(WIN_ICON, self._fg))
+        else:
+            self.max_btn.setIcon(icons.icon_maximize(WIN_ICON, self._fg))
 
-        self.next_btn = QPushButton()
-        self.next_btn.setObjectName("TransportBtn")
-        self.next_btn.setFixedSize(46, 46)
-        self.next_btn.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
-        self.next_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.next_btn.clicked.connect(self.next_clicked.emit)
+    def set_icon_colors(self, fg: str) -> None:
+        self._fg = fg
+        self._build_icons()
 
-        self.loop_btn = QPushButton()
-        self.loop_btn.setObjectName("LoopBtn")
-        self.loop_btn.setCheckable(True)
-        self.loop_btn.setToolTip("Repeat current track")
-        self.loop_btn.setFixedSize(44, 44)
-        self.loop_btn.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
-        self.loop_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.loop_btn.toggled.connect(self.loop_toggled.emit)
+    def _minimize(self) -> None:
+        w = self.window()
+        if w is None:
+            return
+        if w.isMaximized():
+            w.showNormal()
+        g = w.geometry()
+        if self._saved_geometry is None:
+            self._saved_geometry = g
+            w.setGeometry(g.x() + g.width() // 4,
+                          g.y() + g.height() // 4,
+                          g.width() // 2,
+                          g.height() // 2)
+        else:
+            w.setGeometry(self._saved_geometry)
+            self._saved_geometry = None
 
-        controls_row.addStretch()
-        controls_row.addWidget(self.shuffle_btn)
-        controls_row.addSpacing(8)
-        controls_row.addWidget(self.prev_btn)
-        controls_row.addSpacing(4)
-        controls_row.addWidget(self.play_btn)
-        controls_row.addSpacing(4)
-        controls_row.addWidget(self.next_btn)
-        controls_row.addSpacing(8)
-        controls_row.addWidget(self.loop_btn)
-        controls_row.addStretch()
+    def _maximize(self) -> None:
+        w = self.window()
+        if w:
+            if w.isMaximized():
+                w.showNormal()
+            else:
+                w.showMaximized()
 
-        vol_row = QHBoxLayout()
-        vol_row.setSpacing(4)
+    def _close(self) -> None:
+        if self.window():
+            self.window().close()
 
-        self.vol_icon = QPushButton()
-        self.vol_icon.setObjectName("VolumeBtn")
-        self.vol_icon.setFixedSize(34, 34)
-        self.vol_icon.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
-        self.vol_icon.setCursor(Qt.CursorShape.PointingHandCursor)
+    def set_restored(self, maximized: bool) -> None:
+        self.max_btn.setToolTip("Restore" if maximized else "Maximize")
+        self._apply_maximize_icon()
 
-        self.vol_slider = QSlider(Qt.Orientation.Horizontal)
-        self.vol_slider.setObjectName("VolumeSlider")
-        self.vol_slider.setRange(0, 100)
-        self.vol_slider.setValue(80)
-        self.vol_slider.setFixedWidth(100)
-        self.vol_slider.valueChanged.connect(self.volume_changed.emit)
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        if event.button() == Qt.MouseButton.LeftButton:
+            self._drag_pos = event.globalPosition().toPoint() - self.window().pos()
+
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        if self._drag_pos is not None and event.buttons() & Qt.MouseButton.LeftButton:
+            self.window().move(event.globalPosition().toPoint() - self._drag_pos)
+
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        self._drag_pos = None
+
+    def mouseDoubleClickEvent(self, event: QMouseEvent) -> None:
+        self._maximize()

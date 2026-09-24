@@ -321,4 +321,169 @@ QToolTip {{
         color: {t['bg_titlebar']};
         border: 1px solid {t['accent_hover']};
     }}
- 
+    #ShuffleBtn:checked:hover, #LoopBtn:checked:hover {{
+        background-color: {t['accent_hover']};
+        color: {t['bg_titlebar']};
+    }}
+    #VolumeBtn {{
+        background-color: transparent;
+        color: {t['text']};
+        border-radius: 17px;
+        border: 1px solid transparent;
+        font-size: 18px;
+    }}
+    #VolumeBtn:hover {{
+        background-color: {t['surface']};
+        color: {t['accent']};
+        border: 1px solid {t['surface_hover']};
+    }}
+    #VolumeBtn:pressed {{
+        background-color: {t['accent']};
+        color: {t['bg_titlebar']};
+        border: 1px solid {t['accent']};
+    }}
+
+#PlayPauseBtn {{
+        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+            stop:0 {t['accent']}, stop:1 {t['accent_hover']});
+        color: {t['bg_titlebar']};
+        border-radius: 27px;
+        border: 2px solid {t['accent_hover']};
+        font-weight: bold;
+        font-size: 22px;
+    }}
+    #PlayPauseBtn:hover {{
+        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+            stop:0 {t['accent_hover']}, stop:1 {t['accent']});
+        border: 2px solid {t['accent']};
+    }}
+    #PlayPauseBtn:pressed {{
+        background-color: {t['bg_titlebar']};
+        color: {t['accent']};
+        border: 2px solid {t['accent']};
+    }}
+
+    QTableWidget {{
+        background-color: transparent;
+        gridline-color: transparent;
+        selection-background-color: {t['selection_bg']};
+        selection-color: {t['accent']};
+        border-radius: 8px;
+    }}
+    QTableWidget::item {{
+        padding: 8px;
+        border-bottom: 1px solid {t['border']};
+    }}
+    QTableWidget::item:hover {{
+        background-color: {t['item_hover']};
+        border-radius: 6px;
+    }}
+    QTableWidget::item:selected {{
+        background-color: {t['selection_bg']};
+        color: {t['accent']};
+        border-radius: 10px;
+    }}
+    QHeaderView::section {{
+        background-color: transparent;
+        color: {t['text_muted']};
+        font-weight: 600;
+        padding: 4px;
+        text-transform: uppercase;
+        font-size: 11px;
+    }}
+
+    QSplitter {{
+        background: transparent;
+    }}
+    QSplitter::handle {{
+        background-color: {t['surface']};
+        border-radius: 2px;
+    }}
+    QSplitter::handle:hover {{
+        background-color: {t['accent']};
+    }}
+    QSplitter::handle:vertical:disabled {{
+        background-color: transparent;
+    }}
+
+    QSlider::groove:horizontal {{
+        height: 4px;
+        background: {t['surface']};
+        border-radius: 2px;
+    }}
+    QSlider::sub-page:horizontal {{
+        background: {t['accent']};
+        border-radius: 2px;
+    }}
+    QSlider::handle:horizontal {{
+        background: {t['slider_handle']};
+        width: 12px;
+        height: 12px;
+        margin: -4px 0;
+        border-radius: 6px;
+    }}
+    QSlider::handle:horizontal:hover {{
+        background: #FFFFFF;
+    }}
+
+    QScrollBar:vertical {{
+        background: transparent;
+        width: 6px;
+        margin: 0px;
+    }}
+    QScrollBar::handle:vertical {{
+        background: {t['surface_hover']};
+        min-height: 20px;
+        border-radius: 3px;
+    }}
+    QScrollBar::handle:vertical:hover {{
+        background: {t['accent']};
+    }}
+    QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
+        height: 0px;
+    }}
+
+    #NavBtn {{
+        background-color: transparent;
+        color: {t['text']};
+        border-radius: 8px;
+        padding: 10px 14px;
+        text-align: left;
+        font-size: 13px;
+    }}
+    #NavBtn:hover {{
+        background-color: {t['surface']};
+    }}
+    #NavBtnActive {{
+        background-color: {t['surface']};
+        color: {t['accent']};
+        border-left: 3px solid {t['accent']};
+        border-radius: 8px;
+        padding: 10px 14px;
+        text-align: left;
+        font-size: 13px;
+    }}
+
+    #TrackInfoTitle {{
+        font-size: 18px;
+        font-weight: bold;
+        color: {t['text']};
+    }}
+    #TrackInfoArtist {{
+        font-size: 13px;
+        color: {t['text_muted']};
+    }}
+    #TrackInfoAlbum {{
+        font-size: 12px;
+        color: {t['text_muted']};
+    }}
+
+    #VolumeSlider {{
+        max-width: 100px;
+    }}
+
+    #InfoLabel {{
+        color: {t['text_muted']};
+        font-size: 11px;
+    }}
+    """
