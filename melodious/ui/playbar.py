@@ -69,12 +69,12 @@ class Playbar(QWidget):
 
         self.shuffle_btn = QPushButton()
         self.shuffle_btn.setObjectName("ShuffleBtn")
-        self.seek_slider = _SeekSlider(Qt.Orientation.Horizontal)
-        self.seek_slider.setRange(0, 1000)
-        self.seek_slider.sliderPressed.connect(self._on_seek_press)
-        self.seek_slider.sliderReleased.connect(self._on_seek_release)
-        self.seek_slider.sliderMoved.connect(self._on_seek_move)
-
+        self.shuffle_btn.setCheckable(True)
+        self.shuffle_btn.setToolTip("Shuffle (random order)")
+        self.shuffle_btn.setFixedSize(44, 44)
+        self.shuffle_btn.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
+        self.shuffle_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.shuffle_btn.toggled.connect(self.shuffle_toggled.emit)
 
         self.prev_btn = QPushButton()
         self.prev_btn.setObjectName("TransportBtn")
@@ -106,6 +106,17 @@ class Playbar(QWidget):
         self.loop_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.loop_btn.toggled.connect(self.loop_toggled.emit)
 
+        controls_row.addStretch()
+        controls_row.addWidget(self.shuffle_btn)
+        controls_row.addSpacing(8)
+        controls_row.addWidget(self.prev_btn)
+        controls_row.addSpacing(4)
+        controls_row.addWidget(self.play_btn)
+        controls_row.addSpacing(4)
+        controls_row.addWidget(self.next_btn)
+        controls_row.addSpacing(8)
+        controls_row.addWidget(self.loop_btn)
+        controls_row.addStretch()
 
         vol_row = QHBoxLayout()
         vol_row.setSpacing(4)
@@ -115,3 +126,96 @@ class Playbar(QWidget):
         self.vol_icon.setFixedSize(34, 34)
         self.vol_icon.setIconSize(QSize(ICON_SIZE, ICON_SIZE))
         self.vol_icon.setCursor(Qt.CursorShape.PointingHandCursor)
+
+        self.vol_slider = QSlider(Qt.Orientation.Horizontal)
+        self.vol_slider.setObjectName("VolumeSlider")
+        self.vol_slider.setRange(0, 100)
+        self.vol_slider.setValue(80)
+        self.vol_slider.setFixedWidth(100)
+        self.vol_slider.valueChanged.connect(self.volume_changed.emit)
+
+        vol_row.addWidget(self.vol_icon)
+        vol_row.addWidget(self.vol_slider)
+
+        right_layout = QHBoxLayout()
+        right_layout.setContentsMargins(0, 0, 0, 0)
+        right_layout.addStretch()
+        right_layout.addLayout(vol_row)
+
+        outer = QHBoxLayout()
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.addLayout(controls_row, 3)
+        outer.addLayout(right_layout, 1)
+
+        main_layout.addLayout(outer)
+
+        self._setup_shortcuts()
+        self._fg = "#CDD6F4"
+        self._on_accent = "#11111B"
+        self._build_icons()
+
+    def _build_icons(self) -> None:
+        fg = self._fg
+        self.shuffle_btn.setIcon(icons.icon_shuffle(ICON_SIZE, fg))
+        self.prev_btn.setIcon(icons.icon_prev(ICON_SIZE, fg))
+        self.next_btn.setIcon(icons.icon_next(ICON_SIZE, fg))
+        self.loop_btn.setIcon(icons.icon_repeat_one(ICON_SIZE, fg))
+        self.vol_icon.setIcon(icons.icon_volume(ICON_SIZE, fg))
+        self._apply_play_icon()
+
+    def _apply_play_icon(self) -> None:
+        if self._is_playing:
+            self.play_btn.setIcon(icons.icon_pause(ICON_SIZE, self._on_accent))
+        else:
+            self.play_btn.setIcon(icons.icon_play(ICON_SIZE, self._on_accent))
+
+    def set_icon_colors(self, fg: str, on_accent: str) -> None:
+        self._fg = fg
+        self._on_accent = on_accent
+        self._build_icons()
+
+    def _setup_shortcuts(self) -> None:
+        space = QShortcut(QKeySequence(Qt.Key.Key_Space), self)
+        space.activated.connect(self.play_pause_clicked.emit)
+
+        left = QShortcut(QKeySequence(Qt.Key.Key_Left), self)
+        left.activated.connect(self.prev_clicked.emit)
+
+        right = QShortcut(QKeySequence(Qt.Key.Key_Right), self)
+        right.activated.connect(self.next_clicked.emit)
+
+        up = QShortcut(QKeySequence(Qt.Key.Key_Up), self)
+        up.activated.connect(lambda: self.vol_slider.setValue(
+            min(100, self.vol_slider.value() + 5)))
+
+        down = QShortcut(QKeySequence(Qt.Key.Key_Down), self)
+        down.activated.connect(lambda: self.vol_slider.setValue(
+            max(0, self.vol_slider.value() - 5)))
+
+    def _on_seek_press(self) -> None:
+        self._seeking = True
+
+    def _on_seek_release(self) -> None:
+        self._seeking = False
+        self.seek_requested.emit(self.seek_slider.value())
+
+    def _on_seek_move(self, value: int) -> None:
+        pass
+
+    def set_playing(self, playing: bool) -> None:
+        self._is_playing = playing
+        self._apply_play_icon()
+
+    def update_position(self, ms: float, duration_ms: float) -> None:
+        if not self._seeking:
+            if duration_ms > 0:
+                self.seek_slider.setValue(int((ms / duration_ms) * 1000))
+            self.time_label.setText(self._fmt(ms))
+        self.duration_label.setText(self._fmt(duration_ms))
+
+    @staticmethod
+    def _fmt(ms: float) -> str:
+        total_secs = int(ms / 1000)
+        mins = total_secs // 60
+        secs = total_secs % 60
+        return f"{mins:02d}:{secs:02d}"
