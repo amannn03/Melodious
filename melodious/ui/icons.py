@@ -114,3 +114,169 @@ def icon_repeat_one(size: int = 24, color: str = "#CDD6F4") -> QIcon:
         p.drawText(QRectF(4 * s, 8 * s, 16 * s, 9 * s),
                    Qt.AlignmentFlag.AlignCenter, "1")
     return _render(size, color, draw)
+
+
+def icon_volume(size: int = 24, color: str = "#CDD6F4") -> QIcon:
+    def draw(p, c, s):
+        w = 2.0 * s
+        _pen(p, c, w)
+        path = QPainterPath()
+        path.moveTo(5 * s, 8.5 * s)
+        path.lineTo(8.5 * s, 8.5 * s)
+        path.lineTo(12.5 * s, 4.5 * s)
+        path.lineTo(12.5 * s, 19.5 * s)
+        path.lineTo(8.5 * s, 15.5 * s)
+        path.lineTo(5 * s, 15.5 * s)
+        path.closeSubpath()
+        p.drawPath(path)
+        p.drawArc(QRectF(11.5 * s, 9.5 * s, 5.5 * s, 5 * s), -50 * 16, 100 * 16)
+        p.drawArc(QRectF(15.5 * s, 7 * s, 7.5 * s, 10 * s), -60 * 16, 120 * 16)
+    return _render(size, color, draw)
+
+
+def icon_volume_mute(size: int = 24, color: str = "#CDD6F4") -> QIcon:
+    def draw(p, c, s):
+        w = 2.0 * s
+        _pen(p, c, w)
+        path = QPainterPath()
+        path.moveTo(5 * s, 8.5 * s)
+        path.lineTo(8.5 * s, 8.5 * s)
+        path.lineTo(12.5 * s, 4.5 * s)
+        path.lineTo(12.5 * s, 19.5 * s)
+        path.lineTo(8.5 * s, 15.5 * s)
+        path.lineTo(5 * s, 15.5 * s)
+        path.closeSubpath()
+        p.drawPath(path)
+        p.drawLine(QPointF(15.5 * s, 9 * s), QPointF(21.5 * s, 15 * s))
+        p.drawLine(QPointF(21.5 * s, 9 * s), QPointF(15.5 * s, 15 * s))
+    return _render(size, color, draw)
+
+
+def icon_menu(size: int = 24, color: str = "#CDD6F4") -> QIcon:
+    def draw(p, c, s):
+        _pen(p, c, 2.1 * s)
+        p.drawLine(QPointF(5 * s, 7 * s), QPointF(19 * s, 7 * s))
+        p.drawLine(QPointF(5 * s, 12 * s), QPointF(19 * s, 12 * s))
+        p.drawLine(QPointF(5 * s, 17 * s), QPointF(19 * s, 17 * s))
+    return _render(size, color, draw)
+
+
+def icon_minimize(size: int = 24, color: str = "#CDD6F4") -> QIcon:
+    def draw(p, c, s):
+        _pen(p, c, 2.2 * s)
+        p.drawLine(QPointF(7 * s, 12 * s), QPointF(17 * s, 12 * s))
+    return _render(size, color, draw)
+
+
+def icon_maximize(size: int = 24, color: str = "#CDD6F4") -> QIcon:
+    def draw(p, c, s):
+        _pen(p, c, 2.0 * s)
+        p.drawRect(QRectF(7 * s, 7 * s, 11 * s, 11 * s))
+    return _render(size, color, draw)
+
+
+def icon_restore(size: int = 24, color: str = "#CDD6F4") -> QIcon:
+    def draw(p, c, s):
+        _pen(p, c, 1.8 * s)
+        p.drawRect(QRectF(6 * s, 6 * s, 9.5 * s, 9.5 * s))
+        p.drawRect(QRectF(9.5 * s, 9.5 * s, 9.5 * s, 9.5 * s))
+    return _render(size, color, draw)
+
+
+def icon_close(size: int = 24, color: str = "#CDD6F4") -> QIcon:
+    def draw(p, c, s):
+        _pen(p, c, 2.2 * s)
+        p.drawLine(QPointF(7 * s, 7 * s), QPointF(17 * s, 17 * s))
+        p.drawLine(QPointF(17 * s, 7 * s), QPointF(7 * s, 17 * s))
+    return _render(size, color, draw)
+
+
+def _sparkle_path(cx: float, cy: float, r: float) -> QPainterPath:
+    path = QPainterPath()
+    path.moveTo(cx, cy - r)
+    path.lineTo(cx + r * 0.25, cy - r * 0.25)
+    path.lineTo(cx + r, cy)
+    path.lineTo(cx + r * 0.25, cy + r * 0.25)
+    path.lineTo(cx, cy + r)
+    path.lineTo(cx - r * 0.25, cy + r * 0.25)
+    path.lineTo(cx - r, cy)
+    path.lineTo(cx - r * 0.25, cy - r * 0.25)
+    path.closeSubpath()
+    return path
+
+
+def icon_melodious(size: int = 256, accent: str = "#BD93F9") -> QIcon:
+    """The Melodious app logo: glowing eighth-note on a dark rounded badge."""
+    from PyQt6.QtGui import QLinearGradient, QRadialGradient
+
+    s = size / 512.0
+    pm = QPixmap(size, size)
+    pm.fill(Qt.GlobalColor.transparent)
+    p = QPainter(pm)
+    p.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+    accent_c = QColor(accent)
+    bg = QLinearGradient(0, 0, 0, size)
+    bg.setColorAt(0, QColor(50, 52, 82))
+    bg.setColorAt(0.5, QColor(33, 34, 54))
+    bg.setColorAt(1, QColor(24, 25, 40))
+    p.setPen(QPen(accent_c, 16 * s, Qt.PenStyle.SolidLine,
+                  Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
+    p.setBrush(bg)
+    p.drawRoundedRect(QRectF(10 * s, 10 * s, 492 * s, 492 * s), 118 * s, 118 * s)
+
+    glow = QRadialGradient(QPointF(250 * s, 295 * s), 175 * s)
+    glow.setColorAt(0, QColor(178, 142, 249, 110))
+    glow.setColorAt(0.55, QColor(178, 142, 249, 55))
+    glow.setColorAt(1, QColor(0, 0, 0, 0))
+    p.setPen(Qt.PenStyle.NoPen)
+    p.setBrush(glow)
+    p.drawEllipse(QPointF(250 * s, 295 * s), 175 * s, 175 * s)
+
+    g2 = QRadialGradient(QPointF(430 * s, 90 * s), 150 * s)
+    g2.setColorAt(0, QColor(139, 233, 253, 60))
+    g2.setColorAt(1, QColor(0, 0, 0, 0))
+    p.setBrush(g2)
+    p.drawEllipse(QPointF(430 * s, 90 * s), 150 * s, 150 * s)
+
+    note_grad = QLinearGradient(195 * s, 90 * s, 320 * s, 400 * s)
+    note_grad.setColorAt(0, QColor(255, 255, 255))
+    note_grad.setColorAt(1, QColor(190, 175, 255))
+    shadow = QColor(0, 0, 0, 80)
+
+    p.save()
+    p.translate(257 * s + 8 * s, 388 * s + 10 * s)
+    p.rotate(-20)
+    p.setBrush(shadow)
+    p.drawEllipse(QRectF(-60 * s, -40 * s, 120 * s, 80 * s))
+    p.restore()
+
+    p.save()
+    p.translate(255 * s + 2 * s, 388 * s + 2 * s)
+    p.rotate(-20)
+    p.setBrush(note_grad)
+    p.drawEllipse(QRectF(-60 * s, -40 * s, 120 * s, 80 * s))
+    p.restore()
+
+    p.setBrush(shadow)
+    p.drawRoundedRect(QRectF(266 * s + 6 * s, 92 * s + 6 * s, 22 * s, 306 * s), 11 * s, 11 * s)
+    p.setBrush(note_grad)
+    p.drawRoundedRect(QRectF(266 * s, 92 * s, 22 * s, 306 * s), 11 * s, 11 * s)
+
+    flag = QPainterPath()
+    flag.moveTo(295 * s, 88 * s)
+    flag.cubicTo(392 * s, 120 * s, 412 * s, 228 * s, 350 * s, 330 * s)
+    flag.cubicTo(330 * s, 268 * s, 320 * s, 210 * s, 295 * s, 212 * s)
+    flag.closeSubpath()
+    p.setBrush(shadow)
+    p.drawPath(QPainterPath(flag).translated(6 * s, 8 * s))
+    p.setBrush(note_grad)
+    p.drawPath(flag)
+
+    p.setBrush(QColor(255, 255, 255, 200))
+    p.drawPath(_sparkle_path(390 * s, 60 * s, 18 * s))
+    p.setBrush(QColor(255, 255, 255, 130))
+    p.drawPath(_sparkle_path(120 * s, 430 * s, 11 * s))
+
+    p.end()
+    return QIcon(pm)
